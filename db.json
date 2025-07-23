@@ -1,0 +1,13 @@
+
+{
+  "users": [
+    {
+        "id": "1",
+        "name": "Vinicius Dilly"
+    }
+  ],
+  "religions": [
+    { "id": "1", "img": "https://pyeefbssdgedhifudsar.supabase.co/storage/v1/object/sign/religion/judaism.avif?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTI3MDhmOC1jNTZjLTRjZWUtYmYwZi1kMjQyMDdiMTlkYWEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWxpZ2lvbi9qdWRhaXNtLmF2aWYiLCJpYXQiOjE3NTMwNTUzMDQsImV4cCI6MTc1MzY2MDEwNH0.-IlbiB90mmbz2M0wu1ARKdGJQ5DLxVpG3SWX9hsTtQg", "name": "Judaism" },
+    { "id": "2", "img": "https://pyeefbssdgedhifudsar.supabase.co/storage/v1/object/sign/religion/cristianism.webp?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTI3MDhmOC1jNTZjLTRjZWUtYmYwZi1kMjQyMDdiMTlkYWEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWxpZ2lvbi9jcmlzdGlhbmlzbS53ZWJwIiwiaWF0IjoxNzUzMDU1NjEwLCJleHAiOjE3NTM2NjA0MTB9.1PUnPoUcKmAk9JwrI9CMdb71_QVq5VvxphwbH1BwScE", "name": "Cristianism"}
+  ]
+}

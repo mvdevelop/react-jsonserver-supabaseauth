@@ -1,0 +1,20 @@
+
+.loginsignup-container {
+    display: flex;
+    width: 40em;
+    gap: 5em;
+    padding: 1em;
+    margin: 5em auto;
+}
+
+.loginsignup-box {
+    background-color: rgb(245, 244, 244);
+    padding: 1em;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.418) 1px 1px .1px;
+}
+
+.loginsignup-box button {
+    padding: .3em;
+    border-radius: 5px;
+}
