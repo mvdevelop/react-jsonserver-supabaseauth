@@ -8,7 +8,7 @@ interface Religion {
 }
 
 const Content: React.FC = () => {
-  const [data, setData] = useState<any[] | null>(null);
+  // Supabase data fetched from 'religions' table (used for future features)
   const [error, setError] = useState<string | null>(null);
   const [religions, setReligions] = useState<Religion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,14 +18,12 @@ const Content: React.FC = () => {
 
     async function fetchData() {
       try {
-        const { data: tableData, error: supabaseError } = await supabase
+        const { error: supabaseError } = await supabase
           .from('religions')
           .select('*');
 
         if (supabaseError) {
           setError('Falha ao carregar dados.');
-        } else {
-          setData(tableData);
         }
       } catch {
         setError('Erro inesperado ao carregar dados.');

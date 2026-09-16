@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginSignup from '../pages/LoginSignup';
 
-// Mock supabase client
+// Create mock functions at top level
 const mockSignInWithPassword = vi.fn();
 const mockSignUp = vi.fn();
 
+// Mock supabase client BEFORE importing the component
 vi.mock('../supabaseClient', () => ({
   default: {
     auth: {
@@ -15,10 +15,13 @@ vi.mock('../supabaseClient', () => ({
   },
 }));
 
+// Import after mock
+import LoginSignup from '../pages/LoginSignup';
+
 describe('LoginSignup', () => {
   beforeEach(() => {
-    mockSignInWithPassword.mockClear();
-    mockSignUp.mockClear();
+    mockSignInWithPassword.mockReset();
+    mockSignUp.mockReset();
   });
 
   it('renders login form by default', () => {
@@ -93,27 +96,7 @@ describe('LoginSignup', () => {
     });
   });
 
-  it('displays error message when login fails', async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({
-      error: { message: 'Invalid credentials' },
-    });
-
-    render(<LoginSignup />);
-
-    const emailInput = screen.getByLabelText('Email');
-    const passwordInput = screen.getByLabelText('Senha');
-    const submitButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(submitButton);
-
-    expect(
-      await screen.findByText('Falha no login. Verifique suas credenciais.')
-    ).toBeInTheDocument();
-  });
-
-  it('masks error messages to not expose Supabase internals', async () => {
+  it('displays masked error message when login fails', async () => {
     mockSignInWithPassword.mockResolvedValueOnce({
       error: { message: 'Auth sign-in failed: user-not-found' },
     });
@@ -128,11 +111,12 @@ describe('LoginSignup', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitButton);
 
-    // Should NOT expose the actual Supabase error message
     const errorElement = await screen.findByText(
       'Falha no login. Verifique suas credenciais.'
     );
     expect(errorElement).toBeInTheDocument();
+
+    // Should NOT expose the actual Supabase error message
     expect(screen.queryByText('user-not-found')).not.toBeInTheDocument();
   });
 });
