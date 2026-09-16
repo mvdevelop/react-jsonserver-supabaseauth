@@ -30,15 +30,7 @@ const LoginSignup: React.FC<LoginSignupProps> = ({ onAuthSuccess }) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Rate limiting check
-    const now = Date.now();
-    if (now - lastAttempt < RATE_LIMIT_MS) {
-      setError(`Aguarde ${Math.ceil((RATE_LIMIT_MS - (now - lastAttempt)) / 1000)}s antes de tentar novamente.`);
-      return;
-    }
-    setLastAttempt(now);
-
-    // Input validation
+    // Input validation FIRST (security: validate before any processing)
     if (!validateEmail(email)) {
       setError('Email inválido.');
       return;
@@ -47,6 +39,14 @@ const LoginSignup: React.FC<LoginSignupProps> = ({ onAuthSuccess }) => {
       setError('A senha deve ter pelo menos 6 caracteres.');
       return;
     }
+
+    // Rate limiting check (prevent brute-force attacks)
+    const now = Date.now();
+    if (now - lastAttempt < RATE_LIMIT_MS) {
+      setError(`Aguarde ${Math.ceil((RATE_LIMIT_MS - (now - lastAttempt)) / 1000)}s antes de tentar novamente.`);
+      return;
+    }
+    setLastAttempt(now);
 
     setLoading(true);
     setError(null);

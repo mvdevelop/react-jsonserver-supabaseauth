@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-// Create mock functions at top level
-const mockSignInWithPassword = vi.fn();
-const mockSignUp = vi.fn();
+// Use vi.hoisted to make mock functions available in vi.mock factory
+const { mockSignInWithPassword, mockSignUp } = vi.hoisted(() => ({
+  mockSignInWithPassword: vi.fn(),
+  mockSignUp: vi.fn(),
+}));
 
-// Mock supabase client BEFORE importing the component
 vi.mock('../supabaseClient', () => ({
   default: {
     auth: {
@@ -15,7 +16,6 @@ vi.mock('../supabaseClient', () => ({
   },
 }));
 
-// Import after mock
 import LoginSignup from '../pages/LoginSignup';
 
 describe('LoginSignup', () => {
@@ -27,7 +27,8 @@ describe('LoginSignup', () => {
   it('renders login form by default', () => {
     render(<LoginSignup />);
 
-    expect(screen.getByText('Login')).toBeInTheDocument();
+    // Use heading role to avoid duplicate "Login" text (h1 vs button)
+    expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
     expect(screen.getByLabelText('Senha')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
@@ -39,22 +40,25 @@ describe('LoginSignup', () => {
     const toggleButton = screen.getByRole('button', { name: 'Cadastrar' });
     fireEvent.click(toggleButton);
 
-    expect(screen.getByText('Cadastro')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cadastro' })).toBeInTheDocument();
     expect(screen.getByLabelText('Nome completo')).toBeInTheDocument();
   });
 
   it('validates email format before submitting', async () => {
-    render(<LoginSignup />);
+    const { container } = render(<LoginSignup />);
 
     const emailInput = screen.getByLabelText('Email');
     const passwordInput = screen.getByLabelText('Senha');
-    const submitButton = screen.getByRole('button', { name: 'Login' });
+    const form = container.querySelector('form')!;
 
     fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(submitButton);
+    fireEvent.submit(form);
 
-    expect(await screen.findByText('Email inválido.')).toBeInTheDocument();
+    // Wait for the error message to appear
+    await waitFor(() => {
+      expect(screen.getByText('Email inválido.')).toBeInTheDocument();
+    });
     expect(mockSignInWithPassword).not.toHaveBeenCalled();
   });
 
@@ -96,7 +100,7 @@ describe('LoginSignup', () => {
     });
   });
 
-  it('displays masked error message when login fails', async () => {
+  it('masks error messages to not expose Supabase internals', async () => {
     mockSignInWithPassword.mockResolvedValueOnce({
       error: { message: 'Auth sign-in failed: user-not-found' },
     });
